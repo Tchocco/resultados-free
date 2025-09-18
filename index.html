@@ -270,14 +270,14 @@
     return out;
   }
 
-  // Carrega CSV online com fallbacks
+    // Carrega CSV online com fallbacks
   async function carregarCSV(){
     const status = document.getElementById('statusCSV');
     const tentativas = [
-      './resultados.csv',
-      'https://raw.githubusercontent.com/Tchocco/resultados-free/refs/heads/main/resultados.csv'
+      './resultados.csv', // Esta tentativa continuará falhando localmente, mas pode funcionar se você hospedar o site.
+      'https://raw.githubusercontent.com/Tchocco/resultados-free/main/resultados.csv' // URL CORRIGIDA
     ];
-    for (const url of tentativas){
+    for (const url of tentativas ){
       try{
         const resp = await fetch(url, {cache:'no-store'});
         if (!resp.ok) throw new Error('HTTP '+resp.status);
@@ -289,9 +289,15 @@
         document.getElementById('qtdConcursos').textContent = `Concursos: ${historico.length}`;
         document.getElementById('ultimoConcurso').textContent = `Último: ${historico[historico.length-1].concurso} (${historico[historico.length-1].data})`;
         listarHistorico(historico.slice(-30));
-        return;
+        return; // Sucesso, então saímos da função
       }catch(e){
         console.warn('Falha ao carregar', url, e);
+      }
+    }
+    // Se todas as tentativas falharem
+    status.textContent = 'Não foi possível carregar resultados.csv. Você ainda pode gerar palpites aleatórios.';
+  }
+
       }
     }
     status.textContent = 'Não foi possível carregar resultados.csv. Você ainda pode gerar palpites aleatórios.';
